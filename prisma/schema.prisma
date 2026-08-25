@@ -1,0 +1,60 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Daily 2-minute check-in (from the Companion Tracker PDF)
+model DailyEntry {
+  id           String   @id @default(cuid())
+  date         String   @unique // YYYY-MM-DD
+  sleepQuality Int? // 1-10
+  mood         Int? // 1-10
+  energy       Int? // 1-10
+  symptoms     String? // a few words
+  actions      String? // a few words
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+// Weekly pattern note (from the Companion Tracker PDF)
+model WeeklyNote {
+  id          String   @id @default(cuid())
+  weekStart   String   @unique // Monday, YYYY-MM-DD
+  mainSymptom String?
+  pattern     String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// Doctor Visit Prep sheet (from the Companion Tracker PDF)
+model DoctorVisit {
+  id              String   @id @default(cuid())
+  appointmentDate String?
+  clinician       String?
+  chapter         String? // which symptom chapter
+  symptom1        String?
+  symptom2        String?
+  symptom3        String?
+  timingPattern   String?
+  script          String? // the "say this" script chosen
+  questions       String?
+  decisions       String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+// Lab Results Log (from the Companion Tracker PDF)
+model LabResult {
+  id             String   @id @default(cuid())
+  test           String
+  result         String?
+  referenceRange String?
+  date           String? // YYYY-MM-DD
+  note           String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
