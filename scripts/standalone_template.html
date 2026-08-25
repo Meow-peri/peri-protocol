@@ -1,0 +1,899 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#a4546a">
+<meta name="color-scheme" content="light dark">
+<title>Peri Protocol · Perimenopause Companion</title>
+<style>
+:root{
+  --bg:#f8f2ef; --card:#fffdfc; --fg:#3a2a26; --muted:#8a6f68;
+  --primary:#a4546a; --primary-ink:#7e3c50; --primary-soft:#f7e6ea;
+  --border:#eadcd5; --chip:#f3e6e1; --soft:#f5ece8;
+  --danger:#b3443f; --danger-soft:#fbeeed;
+  --ok:#3e7d5a; --ok-soft:#ecf5ef;
+  --sci:#7a5a8f; --sci-soft:#f3edf7;
+  --shadow:0 1px 3px rgba(90,60,50,.08),0 4px 14px rgba(90,60,50,.06);
+  --r:16px;
+}
+html[data-theme=dark]{
+  --bg:#241c1a; --card:#2f2523; --fg:#f0e6e1; --muted:#b89f98;
+  --primary:#d98a9d; --primary-ink:#e6a9b8; --primary-soft:#43303a;
+  --border:#453734; --chip:#3b2f2c; --soft:#382c29;
+  --danger:#e08a85; --danger-soft:#462c2a;
+  --ok:#8fc9a9; --ok-soft:#28382e;
+  --sci:#c2a9d4; --sci-soft:#392f42;
+  --shadow:0 1px 3px rgba(0,0,0,.3);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--fg);font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4,.serif{font-family:Georgia,"Times New Roman",serif}
+a{color:var(--primary)}
+button{font:inherit;cursor:pointer}
+img{max-width:100%}
+.wrap{max-width:1000px;margin:0 auto;padding:0 16px}
+
+/* header / nav */
+.topbar{position:sticky;top:0;z-index:40;display:none;align-items:center;gap:10px;background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--border);padding:10px 16px;padding-top:calc(10px + env(safe-area-inset-top))}
+.logo{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--primary),#7c4d8c);color:#fff;display:flex;align-items:center;justify-content:center;font-family:Georgia,serif;font-weight:700;font-size:19px;flex:none}
+.topbar .tt{font-family:Georgia,serif;font-weight:700;font-size:17px;line-height:1.1}
+.topbar .ts{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.iconbtn{background:none;border:none;color:var(--muted);padding:8px;border-radius:10px}
+.iconbtn:hover{background:var(--chip);color:var(--fg)}
+
+.layout{display:flex;min-height:100vh}
+.side{display:none;width:250px;flex:none;border-right:1px solid var(--border);background:var(--soft);padding:22px 16px;position:sticky;top:0;height:100vh;flex-direction:column;gap:4px}
+.side .brand{display:flex;gap:10px;align-items:center;margin-bottom:22px}
+.side .brand .tt{font-family:Georgia,serif;font-weight:700;font-size:18px;line-height:1.1}
+.side .brand .ts{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.navbtn{display:flex;align-items:center;gap:12px;width:100%;padding:11px 12px;border:none;background:none;border-radius:12px;font-weight:500;color:var(--muted);text-align:left}
+.navbtn:hover{background:var(--chip);color:var(--fg)}
+.navbtn.on{background:var(--primary);color:#fff}
+.side .note{margin-top:auto;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:10px;font-size:11px;line-height:1.5;color:var(--muted)}
+
+.bottomnav{position:fixed;left:0;right:0;bottom:0;z-index:40;display:grid;grid-template-columns:repeat(6,1fr);background:color-mix(in srgb,var(--bg) 95%,transparent);backdrop-filter:blur(8px);border-top:1px solid var(--border);padding-bottom:env(safe-area-inset-bottom)}
+.bottomnav .navbtn{flex-direction:column;gap:2px;padding:8px 2px;font-size:10px;border-radius:0;min-height:52px;justify-content:center}
+.bottomnav .navbtn.on{background:none;color:var(--primary);font-weight:700}
+
+main{flex:1;min-width:0;padding-bottom:86px}
+.view{max-width:1000px;margin:0 auto;padding:22px 16px 30px}
+@media(min-width:920px){
+  .topbar{display:none!important}
+  .side{display:flex}
+  .bottomnav{display:none}
+  main{padding-bottom:0}
+  .view{padding-top:30px}
+}
+
+/* generic */
+.kicker{font-size:11px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--primary);margin:0 0 4px}
+.h1{font-size:29px;font-weight:700;margin:0 0 8px;line-height:1.2}
+.sub{color:var(--muted);font-size:14.5px;margin:0;max-width:640px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow)}
+.pad{padding:20px}
+.btn{display:inline-flex;align-items:center;gap:8px;border:none;border-radius:12px;padding:12px 20px;font-weight:600;font-size:15px;background:var(--primary);color:#fff}
+.btn:hover{filter:brightness(1.06)}
+.btn.ghost{background:none;border:1px solid var(--border);color:var(--fg)}
+.btn.small{padding:8px 14px;font-size:13.5px}
+.chip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--border);background:var(--soft);color:var(--muted);border-radius:999px;padding:4px 11px;font-size:12.5px}
+.chip:hover{border-color:var(--primary);color:var(--fg)}
+.tag{display:inline-block;border-radius:999px;padding:2px 10px;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+.grid2{display:grid;gap:14px}
+@media(min-width:640px){.grid2{grid-template-columns:1fr 1fr}}
+.grid3{display:grid;gap:14px}
+@media(min-width:560px){.grid3{grid-template-columns:1fr 1fr}}
+@media(min-width:920px){.grid3{grid-template-columns:1fr 1fr 1fr}}
+
+/* sliders */
+.mslider{margin-bottom:10px}
+.mrow{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.mlabel{font-weight:600;font-size:14.5px;display:flex;gap:8px;align-items:center}
+.mbadge{min-width:34px;text-align:center;background:var(--primary-soft);color:var(--primary-ink);border-radius:999px;padding:1px 10px;font-weight:700;font-size:14px;font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;accent-color:var(--primary);height:26px;margin:0}
+.ticks{position:relative;height:7px}
+.ticks span{position:absolute;top:0;width:1.5px;height:7px;background:var(--border);transform:translateX(-50%)}
+.ticks span.on{background:var(--primary)}
+.nums{position:relative;height:26px}
+.nums button{position:absolute;transform:translateX(-50%);background:none;border:none;color:var(--muted);opacity:.75;font-size:11.5px;padding:4px 5px;font-variant-numeric:tabular-nums}
+.nums button:hover{opacity:1;color:var(--fg)}
+.nums button.on{color:var(--primary);font-weight:800;opacity:1}
+.words{position:relative;height:17px;font-size:11px;color:var(--muted)}
+.words span{position:absolute;white-space:nowrap}
+
+/* field */
+.field{margin-top:14px}
+.field label{display:block;font-weight:600;font-size:14px;margin-bottom:6px}
+.field input[type=text],.field input[type=date],.field textarea,.field select{width:100%;border:1px solid var(--border);background:var(--card);color:var(--fg);border-radius:11px;padding:10px 13px;font:inherit;font-size:14.5px}
+.field textarea{resize:vertical}
+
+/* stats */
+.stat{padding:14px}
+.stat .sl{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);display:flex;gap:6px;align-items:center}
+.stat .sv{font-size:24px;font-weight:800;margin-top:2px;font-variant-numeric:tabular-nums}
+
+/* chapter cards */
+.chcard{position:relative;overflow:hidden;text-align:left;background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:18px;box-shadow:var(--shadow);transition:transform .15s,box-shadow .15s;display:block;width:100%}
+.chcard:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(90,60,50,.13)}
+.chcard .bar{position:absolute;left:0;right:0;top:0;height:6px;background:var(--c1,var(--primary))}
+.chcard .ico{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;background:var(--c1,var(--primary));color:#fff;font-size:20px;flex:none}
+.chcard h2{font-size:17.5px;margin:12px 0 2px;line-height:1.3}
+.chcard .tg{color:var(--muted);font-size:13.5px;margin:0}
+.chcard .sg{margin-top:10px;font-size:12px;font-weight:600;color:var(--primary-ink)}
+.chhead{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+
+/* chapter detail */
+.dback{background:none;border:none;color:var(--muted);padding:6px 10px 6px 0;font-size:14px}
+.dback:hover{color:var(--fg)}
+.hero{border-radius:var(--r);overflow:hidden;border:1px solid var(--border);background:var(--card);box-shadow:var(--shadow)}
+.hero .hg{height:8px;background:var(--c1,var(--primary))}
+.hero .ht{padding:18px;display:flex;gap:14px;align-items:flex-start}
+.hero .ico{width:56px;height:56px;border-radius:14px;display:flex;align-items:center;justify-content:center;background:var(--c1,var(--primary));color:#fff;font-size:26px;flex:none}
+.hero h1{font-size:25px;margin:2px 0 4px;line-height:1.2}
+.hero .tg{color:var(--muted);margin:0;font-size:14px}
+.hero img{display:block;width:100%;aspect-ratio:3/2;object-fit:cover;border-top:1px solid var(--border)}
+.chipnav{position:sticky;top:0;z-index:30;display:flex;gap:8px;overflow-x:auto;padding:12px 2px;background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:blur(8px);scrollbar-width:none}
+.chipnav::-webkit-scrollbar{display:none}
+.chipnav a{flex:none;font-size:12.5px;text-decoration:none;border:1px solid var(--border);background:var(--card);color:var(--muted);border-radius:999px;padding:6px 13px}
+.chipnav a.red{border-color:var(--danger);background:var(--danger-soft);color:var(--danger);font-weight:600}
+.sec{margin-top:22px;background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:20px;box-shadow:var(--shadow);scroll-margin-top:56px}
+.sec.safety{border:2px solid var(--danger);background:var(--danger-soft)}
+.sech{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:0 0 10px}
+.sech h2{font-size:19px;margin:0}
+.sech .tag{background:var(--chip);color:var(--muted)}
+.alertx{border:1.5px solid var(--danger);background:var(--card);border-radius:12px;padding:12px 14px;margin-bottom:12px}
+.alertx b{color:var(--danger)}
+.alertx p{margin:4px 0 0;font-size:13.5px;color:var(--muted)}
+
+/* blocks */
+.bp{margin:10px 0;font-size:14.5px;line-height:1.65}
+.bq{margin:12px 0;border-left:3px solid var(--primary);padding:2px 0 2px 14px;font-style:italic;color:var(--muted);font-size:14.5px}
+.bl{margin:10px 0;padding-left:22px;font-size:14.5px}
+.bl li{margin:7px 0}
+.bh{font-family:Georgia,serif;font-size:17px;margin:16px 0 6px}
+.cl{margin:12px 0}
+.ci{display:flex;gap:11px;align-items:flex-start;padding:7px 8px;border-radius:10px;cursor:pointer;font-size:14.5px;line-height:1.55}
+.ci:hover{background:var(--soft)}
+.ci .box{flex:none;width:19px;height:19px;border:2px solid var(--muted);border-radius:6px;margin-top:2px;position:relative}
+.ci.on .box{background:var(--primary);border-color:var(--primary)}
+.ci.on .box::after{content:"";position:absolute;left:5px;top:1px;width:5px;height:10px;border:solid #fff;border-width:0 2.5px 2.5px 0;transform:rotate(42deg)}
+.ci.on .txt{color:var(--muted);text-decoration:line-through;text-decoration-color:color-mix(in srgb,var(--muted) 50%,transparent)}
+.cardb{border-radius:12px;padding:13px 15px;margin:10px 0;border:1px solid var(--border)}
+.cardb p{margin:0;font-size:14.5px;line-height:1.6}
+.cardb .tag{margin-bottom:8px}
+.cardb.caution{border-color:color-mix(in srgb,var(--danger) 35%,transparent);background:color-mix(in srgb,var(--danger) 7%,var(--card))}
+.cardb.caution .tag{background:color-mix(in srgb,var(--danger) 14%,transparent);color:var(--danger)}
+.cardb.action{border-color:color-mix(in srgb,var(--primary) 25%,transparent);background:color-mix(in srgb,var(--primary) 6%,var(--card))}
+.cardb.action .tag{background:var(--primary-soft);color:var(--primary-ink)}
+.cardb.info{background:var(--soft)}
+.cardb.validation{border-color:color-mix(in srgb,var(--ok) 30%,transparent);background:color-mix(in srgb,var(--ok) 7%,var(--card))}
+.cardb.validation .tag{background:color-mix(in srgb,var(--ok) 14%,transparent);color:var(--ok)}
+.cardb.science{border-color:color-mix(in srgb,var(--sci) 30%,transparent);background:var(--sci-soft)}
+.cardb.science .tag{color:var(--sci);background:color-mix(in srgb,var(--sci) 12%,transparent)}
+.bk-img{display:block;width:100%;aspect-ratio:3/2;object-fit:cover;border:1px solid var(--border);border-radius:12px;margin:14px 0;cursor:zoom-in}
+.tblwrap{overflow-x:auto;border:1px solid var(--border);border-radius:12px;margin:12px 0}
+.tblwrap table{border-collapse:collapse;width:100%;min-width:520px;font-size:13.5px}
+.tblwrap td{padding:9px 12px;border-top:1px solid var(--border);vertical-align:top}
+.tblwrap tr:first-child td{border-top:none;background:var(--soft);font-weight:600}
+.subsec{border:1px solid var(--border);border-radius:12px;padding:14px;background:color-mix(in srgb,var(--card) 60%,var(--soft));margin:12px 0}
+.copybtn{display:flex;gap:10px;align-items:flex-start;width:100%;text-align:left;background:var(--primary-soft);border:1px solid color-mix(in srgb,var(--primary) 25%,transparent);color:var(--primary-ink);border-radius:11px;padding:11px 13px;font-style:italic;font-size:14px;margin:7px 0;line-height:1.55}
+.copybtn:hover{filter:brightness(.98)}
+details.sci{border:1px solid color-mix(in srgb,var(--sci) 35%,transparent);background:var(--sci-soft);border-radius:var(--r);padding:18px;margin-top:22px}
+details.sci summary{cursor:pointer;font-family:Georgia,serif;font-size:19px;font-weight:700;list-style:none}
+details.sci summary::-webkit-details-marker{display:none}
+details.sci summary .hint{display:block;font-family:-apple-system,system-ui,sans-serif;font-weight:400;font-style:italic;font-size:12.5px;color:var(--muted);margin-top:2px}
+details.sci[open] summary{margin-bottom:8px}
+
+/* tracker */
+.weeknav{display:flex;justify-content:space-between;align-items:center;border:1px solid var(--border);background:var(--card);border-radius:12px;padding:8px;box-shadow:var(--shadow)}
+.weeknav .mid{text-align:center}
+.weeknav .wl{font-weight:700;font-size:14.5px}
+.weeknav .ws{font-size:11px;color:var(--muted)}
+.tgridwrap{overflow-x:auto;border:1px solid var(--border);border-radius:var(--r);background:var(--card);box-shadow:var(--shadow);margin-top:14px}
+table.tgrid{border-collapse:collapse;width:100%;min-width:560px;font-size:13.5px}
+.tgrid th,.tgrid td{padding:6px}
+.tgrid thead th{background:var(--soft);font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);text-align:center;border-bottom:1px solid var(--border)}
+.tgrid thead th:first-child{text-align:left;padding-left:14px}
+.tgrid tbody th{background:var(--card);text-align:left;font-weight:500;font-size:12.5px;padding-left:14px;position:sticky;left:0}
+.tgrid .todaycol{color:var(--primary)}
+.cellbtn{width:100%;min-width:38px;height:36px;border-radius:9px;border:none;font-weight:700;font-variant-numeric:tabular-nums;font-size:13.5px}
+.cellbtn.n{background:var(--soft);color:var(--muted);opacity:.55}
+.cellbtn.g{background:#d9ecdf;color:#275e42}
+.cellbtn.y{background:#f6e8cc;color:#7a5a1d}
+.cellbtn.r{background:#f4d8d6;color:#8c3a35}
+html[data-theme=dark] .cellbtn.g{background:#28382e;color:#8fc9a9}
+html[data-theme=dark] .cellbtn.y{background:#3a3324;color:#d9c08a}
+html[data-theme=dark] .cellbtn.r{background:#462c2a;color:#e08a85}
+.cellbtn.txt{font-weight:400;font-size:11px;text-align:left;padding:0 8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.trends{margin-top:16px}
+.tchart{width:100%;height:auto}
+.tchart .gl{stroke:var(--border);stroke-width:1}
+.tchart .gt{fill:var(--muted);font-size:10px}
+.tchart .ln{fill:none;stroke-width:2.5;stroke-linecap:round}
+.tchart .ls{stroke:#9a6dbb}.tchart .lm{stroke:#c96b7f}.tchart .le{stroke:#c99a4e}
+.legend{display:flex;gap:16px;font-size:12px;color:var(--muted);margin-top:6px;justify-content:center}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:99px;margin-right:5px}
+
+/* doctor / labs */
+.visitcard{position:relative}
+.visitcard .vh{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
+.visitcard .script{background:var(--primary-soft);color:var(--primary-ink);border-radius:10px;padding:9px 12px;font-style:italic;font-size:13px;margin-top:10px}
+.toolrow{display:flex;flex-wrap:wrap;gap:10px;align-items:center;border:1px solid var(--border);background:var(--card);border-radius:12px;padding:11px 14px;margin-bottom:10px;box-shadow:var(--shadow)}
+.toolrow .tname{flex:1;min-width:150px;font-weight:600;font-size:14px}
+.toolrow .tval{background:var(--primary-soft);color:var(--primary-ink);border-radius:9px;padding:3px 11px;font-weight:700;font-variant-numeric:tabular-nums;font-size:14px}
+.toolrow .tref{color:var(--muted);font-size:12px;max-width:170px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.logform{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));border-top:1px dashed var(--border);margin-top:10px;padding-top:12px}
+.hist{border-top:1px dashed var(--border);margin-top:10px;padding-top:8px;font-size:12.5px;color:var(--muted)}
+.hist .hrow{display:flex;gap:12px;align-items:center;margin:4px 0}
+.hist .hrow b{color:var(--fg)}
+
+/* modal */
+.overlay{position:fixed;inset:0;z-index:60;background:rgba(40,25,22,.45);display:flex;align-items:flex-end;justify-content:center;padding:0}
+@media(min-width:640px){.overlay{align-items:center;padding:24px}}
+.modal{background:var(--card);border-radius:20px 20px 0 0;width:100%;max-width:560px;max-height:88vh;overflow-y:auto;padding:22px}
+@media(min-width:640px){.modal{border-radius:20px}}
+.modal h3{font-size:20px;margin:0 0 4px}
+.modal .mh{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.modal .x{background:none;border:none;color:var(--muted);font-size:22px;line-height:1;padding:4px 8px}
+.formrow{display:grid;gap:12px;grid-template-columns:1fr 1fr}
+@media(max-width:520px){.formrow{grid-template-columns:1fr}}
+.suggest{display:block;width:100%;text-align:left;background:var(--primary-soft);border:1px solid color-mix(in srgb,var(--primary) 25%,transparent);color:var(--primary-ink);border-radius:10px;padding:9px 12px;font-style:italic;font-size:12.5px;margin:6px 0;line-height:1.5}
+
+/* toast / lightbox */
+#toast{position:fixed;left:50%;bottom:84px;transform:translateX(-50%) translateY(20px);background:var(--fg);color:var(--bg);padding:10px 18px;border-radius:99px;font-size:13.5px;font-weight:600;opacity:0;pointer-events:none;transition:all .25s;z-index:80;max-width:88vw;text-align:center}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#lightbox{position:fixed;inset:0;z-index:70;background:rgba(30,18,16,.86);display:none;align-items:center;justify-content:center;flex-direction:column;gap:12px;padding:24px;cursor:zoom-out}
+#lightbox.open{display:flex}
+#lightbox img{max-width:100%;max-height:78vh;border-radius:12px}
+#lightbox p{color:#f0e6e1;font-size:13px;text-align:center;max-width:560px;margin:0}
+
+.quote{background:linear-gradient(135deg,color-mix(in srgb,var(--primary) 6%,var(--card)),color-mix(in srgb,#9a6dbb 6%,var(--card)));border:1px solid var(--border);border-radius:var(--r);padding:18px;display:flex;gap:12px;margin-top:22px}
+
+/* in-content book links */
+.navlink{color:var(--primary);font-weight:500;text-decoration:underline dotted;text-underline-offset:3px;cursor:pointer}
+.navlink:hover{text-decoration-style:solid}
+.bl li:has(> .navlink){list-style:none;margin-left:-14px}
+.bl li:has(> .navlink) > .navlink{display:block;border:1px solid color-mix(in srgb,var(--primary) 30%,transparent);background:color-mix(in srgb,var(--primary) 5%,transparent);border-radius:12px;padding:10px 14px;line-height:1.5;text-decoration:none}
+.bl li:has(> .navlink) > .navlink:hover{background:color-mix(in srgb,var(--primary) 12%,transparent);text-decoration:none}
+.bl li:has(> .navlink) > .navlink::after{content:" →";font-weight:700}
+.nav-flash{animation:navflash 1.8s ease}
+@keyframes navflash{0%,55%{background-color:color-mix(in srgb,var(--primary) 16%,transparent)}100%{background-color:transparent}}
+
+/* live meaning pill on sliders */
+.wordline{text-align:center;margin:6px 0 0}
+.wordpill{display:inline-block;border-radius:999px;padding:4px 14px;font-size:13.5px;font-weight:600}
+.wt-lo{background:#f4d8d6;color:#8c3a35}
+.wt-mid{background:#f6e8cc;color:#7a5a1d}
+.wt-hi{background:#d9ecdf;color:#275e42}
+html[data-theme=dark] .wt-lo{background:#462c2a;color:#e08a85}
+html[data-theme=dark] .wt-mid{background:#3a3324;color:#d9c08a}
+html[data-theme=dark] .wt-hi{background:#28382e;color:#8fc9a9}
+.quote p{margin:0;font-family:Georgia,serif;font-style:italic;font-size:16px;line-height:1.6}
+.quote .who{font-family:-apple-system,system-ui,sans-serif;font-size:11.5px;color:var(--muted);font-style:normal;margin-top:8px}
+
+.disclaimer{margin-top:26px;background:var(--soft);border-radius:12px;padding:13px;font-size:12px;line-height:1.6;color:var(--muted)}
+footer.foot{border-top:1px solid var(--border);background:var(--card);padding:14px;text-align:center;font-size:11.5px;color:var(--muted);margin-top:40px}
+
+/* print */
+@media print{
+  .topbar,.side,.bottomnav,.chipnav,#toast{display:none!important}
+  body{background:#fff}
+  .no-print{display:none!important}
+  .print-only{display:block!important}
+  main{padding:0}
+}
+.print-only{display:none}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <span class="logo">P</span>
+  <div>
+    <div class="tt">Peri Protocol</div>
+    <div class="ts">Perimenopause companion</div>
+  </div>
+  <button class="iconbtn" style="margin-left:auto" onclick="toggleTheme()" aria-label="Toggle dark mode" title="Light / dark">◐</button>
+</header>
+
+<div class="layout">
+  <aside class="side">
+    <div class="brand">
+      <span class="logo" style="width:40px;height:40px;font-size:20px">P</span>
+      <div>
+        <div class="tt">Peri Protocol</div>
+        <div class="ts">Companion &amp; tracker</div>
+      </div>
+    </div>
+    <nav id="sidenav" aria-label="Main"></nav>
+    <div style="display:flex;justify-content:flex-end"><button class="iconbtn" onclick="toggleTheme()" aria-label="Toggle dark mode" title="Light / dark">◐</button></div>
+    <p class="note">Support tool only — not medical advice. Check symptoms, tests, supplements and treatment decisions with a qualified clinician. In an emergency, call local services.</p>
+  </aside>
+
+  <main>
+    <div id="view" class="view"></div>
+    <footer class="foot">Based on <em>Perimenopause Protocol Deluxe</em> by Knox Ray. Support material only — always check symptoms, tests, medicines, supplements and treatment decisions with a qualified clinician. Call local emergency services when a Safety Gate applies.</footer>
+  </main>
+</div>
+
+<nav class="bottomnav" id="bottomnav" aria-label="Main"></nav>
+<div id="toast" role="status"></div>
+<div id="lightbox" onclick="this.classList.remove('open')"></div>
+
+<script>
+"use strict";
+/* ---------- content ---------- */
+const CONTENT = @@CONTENT@@;
+
+/* ---------- state ---------- */
+const LS = {entries:"peri1:entries", weekly:"peri1:weekly", visits:"peri1:visits", labs:"peri1:labs", checks:"peri1:checks", theme:"peri1:theme"};
+function load(k, d){ try{ const v = JSON.parse(localStorage.getItem(k)); return v==null?d:v; }catch(e){ return d; } }
+function save(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }
+let ENTRIES = load(LS.entries, {});   // {"YYYY-MM-DD": {sleep,mood,energy,symptoms,actions}}
+let WEEKLY = load(LS.weekly, {});     // {"YYYY-MM-DD": {main,pattern}}
+let VISITS = load(LS.visits, []);     // [{id,date,clinician,chapter,s1,s2,s3,timing,script,questions,decisions}]
+let LABS = load(LS.labs, []);         // [{id,test,result,range,date,note}]
+let CHECKS = load(LS.checks, {});     // {"key:itemIdx":true}
+
+/* ---------- utils ---------- */
+const $ = s => document.querySelector(s);
+const esc = s => String(s==null?"":s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+function md(s){ return esc(s)
+  .replace(/\*\*([^*]+)\*\*/g,"<strong>$1</strong>")
+  .replace(/\*([^*]+)\*/g,"<em>$1</em>")
+  .replace(/\[\[([^\]|]+)\|([^\]]+)\]\]/g,'<a href="#" class="navlink" data-nav="$2" onclick="return false">$1</a>')
+  .replace(/\n/g,"<br>"); }
+const pad2 = n => String(n).padStart(2,"0");
+const iso = d => d.getFullYear()+"-"+pad2(d.getMonth()+1)+"-"+pad2(d.getDate());
+const todayISO = () => iso(new Date());
+const addDays = (d,n) => { const c = new Date(d.getFullYear(),d.getMonth(),d.getDate()); c.setDate(c.getDate()+n); return c; };
+const mondayOf = d => { const c = new Date(d.getFullYear(),d.getMonth(),d.getDate()); c.setDate(c.getDate()-((c.getDay()+6)%7)); return c; };
+const DAYS=["Mon","Tue","Wed","Thu","Fri","Sat","Sun"], MONS=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+const dShort = d => DAYS[(d.getDay()+6)%7];
+const fmtP = d => MONS[d.getMonth()]+" "+d.getDate();
+function greeting(){ const h=new Date().getHours(); if(h<5)return"Still awake"; if(h<12)return"Good morning"; if(h<17)return"Good afternoon"; return"Good evening"; }
+function streak(){ const set=new Set(Object.keys(ENTRIES)); let c=0,cur=new Date(); if(!set.has(iso(cur))&&!set.has(iso(addDays(cur,-1))))return 0; if(!set.has(iso(cur)))cur=addDays(cur,-1); while(set.has(iso(cur))){c++;cur=addDays(cur,-1);} return c; }
+function toast(msg){ const t=$("#toast"); t.textContent=msg; t.classList.add("show"); clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove("show"),2200); }
+function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
+
+/* ---------- content helpers ---------- */
+const SYMPTOMS = CONTENT.chapters.filter(c=>c.number<=13);
+const APPENDIX = CONTENT.chapters.filter(c=>c.number>=15);
+const STACKING = CONTENT.chapters.find(c=>c.slug==="stacking");
+const bySlug = s => CONTENT.chapters.find(c=>c.slug===s);
+function sectionsOf(ch,kind){ return ch.sections.filter(s=>s.kind===kind); }
+function scriptsOf(ch){
+  let out=[];
+  sectionsOf(ch,"doctor").forEach(s=>{
+    let q=[];
+    s.blocks.forEach(b=>{ if(b.type==="quote") q.push(b.text.replace(/\*\*/g,"")); });
+    if(!q.length) s.blocks.forEach(b=>{ if(b.type==="para"||b.type==="card"){ const m=b.text.replace(/\*\*/g,"").match(/\u201C[^\u201D]{15,400}\u201D/g); if(m) q=q.concat(m); } });
+    out=out.concat(q.slice(0,3));
+  });
+  return out;
+}
+const ICONS={ "wake-up":"🌙","rage":"🔥","belly":"⚖️","brain-fog":"🌫️","hair-loss":"✨","joints":"🦴","fatigue":"🔋","palpitations":"💓","libido":"💗","periods":"🩸","acne-skin":"🌞","bloating":"🎈","hrt":"💊","stacking":"🧩","lab-cheatsheet":"🧪","supplement-matrix":"⚠️","supplement-label":"🏷️","source-stack":"📚","doctor-scripts":"💬" };
+const CHCOLORS={ "wake-up":"#8e5fa8","rage":"#c05a5a","belly":"#c08a3e","brain-fog":"#7d7468","hair-loss":"#4d8f6a","joints":"#c0724a","fatigue":"#c2a13c","palpitations":"#b5453f","libido":"#c96b8a","periods":"#a04a8f","acne-skin":"#d08a4a","bloating":"#7ca04a","hrt":"#7a5a8f","stacking":"#4d8f7a","lab-cheatsheet":"#3e8f8a","supplement-matrix":"#b5453f","supplement-label":"#c08a3e","source-stack":"#7d7468","doctor-scripts":"#c05a5a" };
+function chColor(slug){ return CHCOLORS[slug]||"#a4546a"; }
+function chIcon(slug){ return ICONS[slug]||"✨"; }
+const SECLABEL={general:"Overview","patterns":"Pick your pattern","is-this-you":"Is this you?","do-now":"Do this now",fix48:"48-hour fix",week7:"First 7 days",reset30:"30-day reset",doctor:"Say this to your doctor",science:"The science",troubleshooting:"If it isn't working"};
+const SECCHIP={"do-now":"Right now",fix48:"Next 2 days",week7:"Build a routine",reset30:"Longer game",doctor:"Advocate",science:"Optional"};
+
+/* ---------- block rendering ---------- */
+function renderBlocks(blocks,key){
+  return blocks.map((b,i)=>renderBlock(b,key+":"+i)).join("");
+}
+function renderBlock(b,k){
+  switch(b.type){
+    case "heading": return '<h4 class="bh">'+md(b.text)+'</h4>';
+    case "para": return '<p class="bp">'+md(b.text)+'</p>';
+    case "quote": return '<blockquote class="bq">'+md(b.text)+'</blockquote>';
+    case "list": {
+      const tag=b.ordered?"ol":"ul";
+      return '<'+tag+' class="bl">'+b.items.map(i=>"<li>"+md(i)+"</li>").join("")+'</'+tag+'>';
+    }
+    case "checklist":
+      return '<div class="cl">'+b.items.map((it,idx)=>{
+        const on=!!CHECKS[k+":"+idx];
+        return '<div class="ci '+(on?"on":"")+'" data-check="'+esc(k+":"+idx)+'"><span class="box"></span><span class="txt">'+md(it)+'</span></div>';
+      }).join("")+'</div>';
+    case "card": {
+      const v=b.variant||"info";
+      return '<div class="cardb '+v+'">'+(b.label?'<span class="tag">'+esc(b.label)+'</span>':"")+'<p>'+md(b.text)+'</p></div>';
+    }
+    case "image":
+      return '<img class="bk-img" src="'+esc(b.src)+'" alt="'+esc(b.alt)+'" loading="lazy" onclick="openLightbox(this)">';
+    case "table":
+      return '<div class="tblwrap"><table>'+b.rows.map((r,ri)=>'<tr'+(ri===0?' class="hd"':'')+'>'+r.map(c=>'<td>'+md(c)+'</td>').join("")+'</tr>').join("")+'</table></div>';
+    case "subsection":
+      return '<div class="subsec"'+(b.id?' id="a-'+esc(b.id)+'"':"")+'>'+(b.title?'<h4 class="bh" style="margin-top:0">'+md(b.title)+'</h4>':"")+renderBlocks(b.blocks,k)+'</div>';
+    default: return "";
+  }
+}
+function openLightbox(img){
+  const lb=$("#lightbox");
+  lb.innerHTML='<img src="'+img.src+'" alt="'+esc(img.alt)+'"><p>'+esc(img.alt)+"</p>";
+  lb.classList.add("open");
+}
+function copyText(t){
+  const done=()=>toast("Copied — paste it into your notes or say it as written");
+  if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(t).then(done,()=>fallbackCopy(t,done)); }
+  else fallbackCopy(t,done);
+}
+function fallbackCopy(t,done){
+  const ta=document.createElement("textarea"); ta.value=t; ta.style.position="fixed"; ta.style.opacity="0";
+  document.body.appendChild(ta); ta.select();
+  try{ document.execCommand("copy"); done(); }catch(e){ toast("Couldn't copy — please select the text manually"); }
+  document.body.removeChild(ta);
+}
+
+/* ---------- milestone slider (10 words — every number means something) ---------- */
+const WORDS10 = {
+  sleep:["Nightmarish","Barely slept","Very bad","Poor","Broken","So-so","Decent","Good","Restful","Deep & easy"],
+  mood:["Fragile","On edge","Low","Touchy","Up & down","Coping","Steady-ish","Good","Calm & clear","Wonderful"],
+  energy:["Flat","Drained","Heavy","Sluggish","Coping","Okay","Charged-ish","Strong","Buzzing","Fully alive"]
+};
+function wordTone(v){ return v<=3?'wt-lo':(v<=6?'wt-mid':'wt-hi'); }
+function mslider(id,label,emoji,val){
+  const words = WORDS10[id] || WORDS.sleep;
+  const pct=n=>((n-1)/9*100);
+  let nums="",ticks="";
+  for(let n=1;n<=10;n++){
+    ticks+='<span class="'+(n===val?"on":"")+'" style="left:'+pct(n)+'%"></span>';
+    nums+='<button type="button" class="'+(n===val?"on":"")+'" style="left:'+pct(n)+'%" onclick="setMetric(\''+id+'\','+n+')" aria-label="Set '+esc(label)+' to '+n+'">'+n+'</button>';
+  }
+  return '<div class="mslider" id="ms-'+id+'">'+
+    '<div class="mrow"><span class="mlabel">'+emoji+' '+esc(label)+'</span><span class="mbadge" id="badge-'+id+'">'+val+'</span></div>'+
+    '<input type="range" min="1" max="10" step="1" value="'+val+'" aria-label="'+esc(label)+' out of 10" oninput="setMetric(\''+id+'\',+this.value)">'+
+    '<div class="ticks" aria-hidden="true">'+ticks+'</div><div class="nums">'+nums+'</div>'+
+    '<p class="wordline" aria-live="polite"><span class="wordpill '+wordTone(val)+'" id="word-'+id+'">'+val+' = '+words[val-1]+'</span></p></div>';
+}
+
+/* today's draft state */
+let DRAFT = null;
+function ensureDraft(){
+  const t=ENTRIES[todayISO()]||{};
+  if(!DRAFT) DRAFT={sleep:t.sleep||5,mood:t.mood||5,energy:t.energy||5,symptoms:t.symptoms||"",actions:t.actions||""};
+}
+function setMetric(id,v){
+  ensureDraft(); DRAFT[id]=v;
+  const b=$("#badge-"+id); if(b)b.textContent=v;
+  const w=$("#word-"+id); if(w){ const words=WORDS10[id]||WORDS10.sleep; w.className="wordpill "+wordTone(v); w.textContent=v+" = "+words[v-1]; }
+  const ms=$("#ms-"+id);
+  if(ms){ const inp=ms.querySelector("input"); inp.value=v;
+    ms.querySelectorAll(".nums button").forEach(btn=>btn.classList.toggle("on",+btn.textContent===v));
+    ms.querySelectorAll(".ticks span").forEach((s,i)=>s.classList.toggle("on",i+1===v));
+  }
+}
+
+/* ---------- views ---------- */
+function viewToday(){
+  ensureDraft();
+  const t=ENTRIES[todayISO()];
+  const set=Object.keys(ENTRIES);
+  const last7=[]; for(let i=0;i<7;i++){ last7.push(iso(addDays(new Date(),-i))); }
+  const wk=last7.map(d=>ENTRIES[d]).filter(Boolean);
+  const avg=f=>{ const v=wk.map(f).filter(x=>x!=null); return v.length?(v.reduce((a,b)=>a+b,0)/v.length).toFixed(1):"—"; };
+  const quick=["wake-up","rage","brain-fog","fatigue","periods","hrt"].map(bySlug).filter(Boolean);
+  const SY=["3 a.m. wake-up","rage / irritable","brain fog","exhausted","bloated","joint pain","hot flash","heavy bleeding","headache","anxious"];
+  const AC=["morning daylight","carb + protein pairing","no caffeine after 2pm","skipped alcohol","walked 20 min","magnesium","slept 8 h","strength training"];
+  const addQuick=(field,val)=>{ ensureDraft(); if(!DRAFT[field].includes(val)) DRAFT[field]=DRAFT[field]?DRAFT[field]+", "+val:val; render(); };
+  $("#view").innerHTML =
+  '<p class="kicker">'+greeting()+" · "+fmtP(new Date())+'</p>'+
+  '<h1 class="h1">How are you, really?</h1>'+
+  '<p class="sub">One number, a few words, two minutes. More detail is not required — noticing patterns is the whole point.</p>'+
+
+  '<div class="card pad" style="margin-top:18px">'+
+    '<h2 style="margin:0 0 14px;font-size:17px">Today\u2019s check-in '+(t?'<span class="tag" style="background:var(--ok-soft);color:var(--ok)">saved</span>':'')+'</h2>'+
+    '<div style="display:grid;gap:26px" class="sm3">'+
+      mslider("sleep","Sleep quality","🌙",DRAFT.sleep)+
+      mslider("mood","Mood","🌷",DRAFT.mood)+
+      mslider("energy","Energy","⚡",DRAFT.energy)+
+    '</div>'+
+    '<style>@media(min-width:920px){.sm3{grid-template-columns:1fr 1fr 1fr}}</style>'+
+    '<div class="field"><label for="f-sym">Symptoms — a few words</label><input type="text" id="f-sym" maxlength="120" placeholder="woke at 3 a.m., irritable by evening\u2026" value="'+esc(DRAFT.symptoms)+'"></div>'+
+    '<div style="display:flex;flex-wrap:wrap;gap:7px;margin-top:8px">'+SY.map(s=>'<button type="button" class="chip" onclick="addQuick(\'symptoms\',\''+esc(s)+'\')">+ '+esc(s)+'</button>').join("")+'</div>'+
+    '<div class="field"><label for="f-act">Actions taken — a few words</label><input type="text" id="f-act" maxlength="120" placeholder="morning walk, magnesium, no wine\u2026" value="'+esc(DRAFT.actions)+'"></div>'+
+    '<div style="display:flex;flex-wrap:wrap;gap:7px;margin-top:8px">'+AC.map(s=>'<button type="button" class="chip" onclick="addQuick(\'actions\',\''+esc(s)+'\')">+ '+esc(s)+'</button>').join("")+'</div>'+
+    '<div style="margin-top:18px"><button class="btn" onclick="saveToday()">'+(t?"Update today":"Save check-in")+' ✓</button></div>'+
+  '</div>'+
+
+  '<div class="grid2" style="margin-top:16px">'+
+    '<div class="card stat"><div class="sl">🔥 Day streak</div><div class="sv">'+streak()+'</div></div>'+
+    '<div class="card stat"><div class="sl">📆 This week</div><div class="sv">'+wk.length+"/7</div></div>"+
+    '<div class="card stat"><div class="sl">🌙 Avg sleep ·7d</div><div class="sv">'+avg(e=>e.sleep)+'</div></div>'+
+    '<div class="card stat"><div class="sl">🌷 Avg mood ·7d</div><div class="sv">'+avg(e=>e.mood)+'</div></div>'+
+  '</div>'+
+
+  '<h2 style="font-size:21px;margin:30px 0 6px">Need help right now?</h2>'+
+  '<p class="sub" style="margin:0 0 12px">Go straight to the symptom that\u2019s worst tonight. Safety Gate first.</p>'+
+  '<div class="grid3">'+quick.map(c=>'<button class="chcard" onclick="go(\'chapter/'+c.slug+'\')"><span class="chhead"><span class="ico" style="--c1:'+chColor(c.slug)+'">'+chIcon(c.slug)+'</span></span><h2 style="font-size:15.5px">'+esc(c.title)+'</h2><p class="tg">'+esc(c.tagline)+'</p></button>').join("")+'</div>'+
+
+  '<div class="quote"><div><p>\u201CYou\u2019re not imagining this. You\u2019re not failing. And you don\u2019t have to figure it out alone.\u201D</p><div class="who">— Knox, Perimenopause Protocol Deluxe</div></div></div>'+
+  '<p class="disclaimer">Support material only — not personal medical advice. Always check symptoms, tests, medicines, supplements and treatment decisions with a qualified clinician.</p>';
+  // reflect typed inputs into draft
+  setTimeout(()=>{ const s=$("#f-sym"),a=$("#f-act");
+    if(s)s.oninput=()=>{ensureDraft();DRAFT.symptoms=s.value;};
+    if(a)a.oninput=()=>{ensureDraft();DRAFT.actions=a.value;};
+  },0);
+}
+function saveToday(){
+  ensureDraft();
+  ENTRIES[todayISO()]={sleep:DRAFT.sleep,mood:DRAFT.mood,energy:DRAFT.energy,symptoms:DRAFT.symptoms,actions:DRAFT.actions};
+  save(LS.entries,ENTRIES);
+  toast("Check-in saved — two minutes a day is all this asks");
+  render();
+}
+
+function viewChapters(){
+  $("#view").innerHTML =
+  '<p class="kicker">Pick your pattern</p>'+
+  '<h1 class="h1">What\u2019s hardest today?</h1>'+
+  '<p class="sub">Open the chapter for the symptom making today hardest. Read its <b style="color:var(--danger)">Safety Gate</b> first, then use Do This Now, the 48-Hour Fix, or the longer plans. You never have to read this book cover to cover.</p>'+
+  '<div class="field" style="max-width:380px"><input type="text" id="chq" placeholder="Search — sleep, rage, fog, hair\u2026" oninput="filterChapters(this.value)" aria-label="Search chapters"></div>'+
+  '<div class="grid3" id="chgrid" style="margin-top:14px">'+SYMPTOMS.map(c=>chCard(c)).join("")+'</div>'+
+  '<p class="disclaimer">Every chapter begins with a Safety Gate. If a warning applies, stop and seek medical care.</p>';
+}
+function chCard(c){
+  return '<button class="chcard" data-t="'+esc((c.title+" "+c.tagline).toLowerCase())+'" onclick="go(\'chapter/'+c.slug+'\')">'+
+    '<span class="bar" style="--c1:'+chColor(c.slug)+'"></span>'+
+    '<span class="chhead"><span class="ico" style="--c1:'+chColor(c.slug)+'">'+chIcon(c.slug)+'</span><span class="tag" style="background:var(--chip);color:var(--muted)">'+(c.number<=12?"Ch. "+c.number:"HRT")+'</span></span>'+
+    '<h2>'+esc(c.title)+'</h2><p class="tg">'+esc(c.tagline)+'</p>'+
+    '<span class="sg" style="color:'+chColor(c.slug)+'">⚠ Safety Gate first</span></button>';
+}
+function filterChapters(q){
+  const t=q.trim().toLowerCase();
+  document.querySelectorAll("#chgrid .chcard").forEach(el=>{
+    el.style.display=!t||el.dataset.t.includes(t)?"":"none";
+  });
+}
+
+let weekOffset=0;
+function viewTracker(){
+  const monday=addDays(mondayOf(new Date()),weekOffset*7);
+  const days=Array.from({length:7},(_,i)=>addDays(monday,i));
+  const wkKey=iso(monday);
+  const note=WEEKLY[wkKey]||{};
+  const t=todayISO();
+  const met=[["sleep","Sleep quality","🌙"],["mood","Mood","🌷"],["energy","Energy","⚡"]];
+  let rows=met.map(([k,label,em])=>
+    '<tr><th>'+em+' '+label+' <span style="font-weight:400;font-size:10.5px;color:var(--muted)">1–10</span></th>'+
+    days.map(d=>{ const v=(ENTRIES[iso(d)]||{})[k]; const cls=v==null?"n":(v>=8?"g":v>=5?"y":"r");
+      return '<td><button class="cellbtn '+cls+'" onclick="editDay(\''+iso(d)+'\')" aria-label="'+label+' '+iso(d)+(v!=null?": "+v:" not set")+'">'+(v==null?"·":v)+'</button></td>'; }).join("")+'</tr>').join("");
+  const flds=[["symptoms","Symptoms"],["actions","Actions taken"]];
+  rows+=flds.map(([k,label])=>
+    '<tr><th>'+label+' <span style="font-weight:400;font-size:10.5px;color:var(--muted)">a few words</span></th>'+
+    days.map(d=>{ const v=(ENTRIES[iso(d)]||{})[k];
+      return '<td><button class="cellbtn txt '+(v?"":"n")+'" style="min-width:86px;background:'+(v?"var(--soft)":"var(--soft)")+';opacity:'+(v?1:.55)+';color:var(--fg)" onclick="editDay(\''+iso(d)+'\')" aria-label="'+label+' '+iso(d)+'">'+(v?esc(v):"+ add")+'</button></td>'; }).join("")+'</tr>').join("");
+
+  // chart data: last 28 entries with values
+  const list=Object.keys(ENTRIES).sort().slice(-28).map(d=>({d, ...ENTRIES[d]})).filter(e=>e.sleep||e.mood||e.energy);
+  const chartHTML = list.length<2
+    ? '<p style="text-align:center;color:var(--muted);font-size:14px;padding:22px 0">Check in on at least two days and your pattern lines will appear here.</p>'
+    : chartSVG(list)+'<div class="legend"><span><i style="background:#9a6dbb"></i>Sleep</span><span><i style="background:#c96b7f"></i>Mood</span><span><i style="background:#c99a4e"></i>Energy</span></div>';
+
+  $("#view").innerHTML=
+  '<p class="kicker">Two minutes a day</p>'+
+  '<h1 class="h1">Weekly tracker</h1>'+
+  '<p class="sub">The same grid as the paper tracker — sleep, mood, energy, symptoms, actions. Tap any cell to fill it in.</p>'+
+  '<div class="weeknav" style="margin-top:16px">'+
+    '<button class="iconbtn" onclick="weekOffset--;render()" aria-label="Previous week">←</button>'+
+    '<div class="mid"><div class="wl">'+MONS[monday.getMonth()]+" "+monday.getDate()+" – "+(monday.getMonth()===addDays(monday,6).getMonth()?addDays(monday,6).getDate():MONS[addDays(monday,6).getMonth()]+" "+addDays(monday,6).getDate())+'</div><div class="ws">'+(weekOffset===0?"This week":weekOffset===-1?"Last week":weekOffset===1?"Next week":Math.abs(weekOffset)+" weeks "+(weekOffset<0?"ago":"ahead"))+'</div></div>'+
+    '<span><button class="btn ghost small" style="margin-right:6px;display:'+(weekOffset===0?"none":"inline-flex")+'" onclick="weekOffset=0;render()">Today</button>'+
+    '<button class="iconbtn" onclick="weekOffset++;render()" aria-label="Next week">→</button></span>'+
+  '</div>'+
+  '<div class="tgridwrap"><table class="tgrid"><thead><tr><th>Track</th>'+days.map(d=>'<th class="'+(iso(d)===t?"todaycol":"")+'">'+dShort(d)+'<div style="font-size:10px;font-weight:400">'+d.getDate()+'</div></th>').join("")+'</tr></thead><tbody>'+rows+'</tbody></table></div>'+
+
+  '<div class="card pad" style="margin-top:16px">'+
+    '<h2 style="margin:0 0 12px;font-size:17px">Pattern I noticed this week</h2>'+
+    '<div class="field"><label for="wn-main">Main symptom this week</label><input type="text" id="wn-main" maxlength="80" placeholder="e.g. 3 a.m. wake-ups, 4 nights" value="'+esc(note.main||"")+'"></div>'+
+    '<div class="field"><label for="wn-pat">The pattern I noticed</label><textarea id="wn-pat" rows="3" maxlength="400" placeholder="e.g. worse after wine; better on mornings I got outside">'+esc(note.pattern||"")+'</textarea></div>'+
+    '<div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap"><button class="btn small" onclick="saveWeekNote(\''+wkKey+'\')">Save weekly note</button>'+
+    '<button class="btn ghost small" onclick="exportData()" title="Download all your entries as a file">⬇ Export my data</button></div>'+
+  '</div>'+
+
+  '<div class="card pad trends"><h2 style="margin:0 0 8px;font-size:17px">Patterns over time</h2>'+chartHTML+
+  '<p class="disclaimer" style="margin-top:12px">Bring this page to your clinician if a pattern is persistent, severe, changing, or affecting daily life.</p></div>';
+}
+function saveWeekNote(k){
+  WEEKLY[k]={main:$("#wn-main").value.trim(),pattern:$("#wn-pat").value.trim()};
+  save(LS.weekly,WEEKLY);
+  toast("Weekly pattern saved — bring it to your clinician if it persists");
+}
+function exportData(){
+  const blob=new Blob([JSON.stringify({entries:ENTRIES,weekly:WEEKLY,visits:VISITS,labs:LABS},null,2)],{type:"application/json"});
+  const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="peri-protocol-my-data.json"; a.click();
+  toast("Your data downloaded as a file");
+}
+function chartSVG(data){
+  const W=640,H=230,P={l:26,r:12,t:14,b:24};
+  const xs=i=>P.l+(i*(W-P.l-P.r))/Math.max(data.length-1,1);
+  const ys=v=>(H-P.b)-((v-1)/9)*(H-P.t-P.b);
+  const seg=k=>{let d="",pen=false;data.forEach((p,i)=>{if(p[k]==null){pen=false;return;}d+=(pen?"L":"M")+xs(i).toFixed(1)+","+ys(p[k]).toFixed(1);pen=true;});return d;};
+  let grid="";
+  [2,4,6,8,10].forEach(v=>{grid+='<line class="gl" x1="'+P.l+'" x2="'+(W-P.r)+'" y1="'+ys(v)+'" y2="'+ys(v)+'"></line><text class="gt" x="6" y="'+(ys(v)+3.5)+'">'+v+'</text>';});
+  let labels="";
+  data.forEach((p,i)=>{ if(i%4===0||i===data.length-1) labels+='<text class="gt" x="'+xs(i)+'" y="'+(H-6)+'" text-anchor="middle">'+dShort(new Date(p.d))+" "+new Date(p.d).getDate()+'</text>'; });
+  return '<svg class="tchart" viewBox="0 0 '+W+" "+H+'" role="img" aria-label="Sleep, mood and energy over time">'+grid+labels+
+    '<path class="ln ls" d="'+seg("sleep")+'"></path><path class="ln lm" d="'+seg("mood")+'"></path><path class="ln le" d="'+seg("energy")+'"></path></svg>';
+}
+
+/* day editor modal */
+let editDate=null;
+function editDay(d){ editDate=d; const e=ENTRIES[d]||{}; DRAFT={sleep:e.sleep||5,mood:e.mood||5,energy:e.energy||5,symptoms:e.symptoms||"",actions:e.actions||""}; openModal(
+  '<div class="mh"><h3>'+new Date(d+"T12:00").toLocaleDateString("en-US",{weekday:"long",month:"long",day:"numeric"})+'</h3><button class="x" onclick="closeModal()" aria-label="Close">✕</button></div>'+
+  mslider("sleep","Sleep quality","🌙",DRAFT.sleep)+
+  mslider("mood","Mood","🌷",DRAFT.mood)+
+  mslider("energy","Energy","⚡",DRAFT.energy)+
+  '<div class="field"><label for="ed-s">Symptoms</label><input type="text" id="ed-s" maxlength="120" placeholder="a few words" value="'+esc(DRAFT.symptoms)+'"></div>'+
+  '<div class="field"><label for="ed-a">Actions taken</label><input type="text" id="ed-a" maxlength="120" placeholder="a few words" value="'+esc(DRAFT.actions)+'"></div>'+
+  '<div style="display:flex;justify-content:flex-end;gap:8px;margin-top:16px"><button class="btn ghost" onclick="closeModal()">Cancel</button><button class="btn" onclick="saveDay()">Save day</button></div>');
+  setTimeout(()=>{ $("#ed-s").oninput=e=>DRAFT.symptoms=e.target.value; $("#ed-a").oninput=e=>DRAFT.actions=e.target.value; },0);
+}
+function saveDay(){
+  ENTRIES[editDate]={sleep:DRAFT.sleep,mood:DRAFT.mood,energy:DRAFT.energy,symptoms:DRAFT.symptoms.trim(),actions:DRAFT.actions.trim()};
+  save(LS.entries,ENTRIES); closeModal(); render(); toast("Day saved");
+}
+
+/* doctor */
+let editingVisit=null;
+function viewDoctor(){
+  $("#view").innerHTML=
+  '<div style="display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap">'+
+  '<div><p class="kicker">Bring this with you</p><h1 class="h1">Doctor visit prep</h1>'+
+  '<p class="sub">Your pattern, your script, and your questions — written down before the appointment.</p></div>'+
+  '<button class="btn" onclick="newVisit()">＋ New prep sheet</button></div>'+
+  (VISITS.length===0
+    ?'<div class="card pad" style="margin-top:18px;border-style:dashed;text-align:center"><p style="color:var(--muted);font-size:14.5px;max-width:420px;margin:6px auto">No prep sheets yet. Create one before your next appointment — pick your symptom chapter, your top three symptoms, and the script you want to use.</p><button class="btn ghost" onclick="newVisit()">Create your first sheet</button></div>'
+    :'<div class="grid2" style="margin-top:18px">'+VISITS.map(v=>{
+        const ch=v.chapter?bySlug(v.chapter):null;
+        return '<div class="card pad visitcard" data-vid="'+v.id+'">'+
+        '<div class="vh"><div><h3 style="margin:0;font-size:16px">'+(v.date?new Date(v.date+"T12:00").toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric",year:"numeric"}):"Date not set")+'</h3>'+
+        '<p style="margin:2px 0 0;font-size:12.5px;color:var(--muted)">'+esc(v.clinician||"Clinician not noted")+'</p></div>'+
+        (ch?'<span class="tag" style="background:'+chColor(ch.slug)+'22;color:'+chColor(ch.slug)+'">'+chIcon(ch.slug)+" "+esc(ch.title)+"</span>":"")+'</div>'+
+        '<div style="margin-top:10px">'+[v.s1,v.s2,v.s3].filter(Boolean).map((s,i)=>'<p style="margin:3px 0;font-size:14px"><b style="color:var(--primary)">'+(i+1)+'.</b> '+esc(s)+'</p>').join("")+'</div>'+
+        (v.script?'<div class="script">\u201C'+esc(v.script)+'\u201D</div>':"")+
+        (v.decisions?'<p style="font-size:12.5px;color:var(--muted);margin-top:8px"><b>Agreed:</b> '+esc(v.decisions)+'</p>':"")+
+        '<div class="no-print" style="display:flex;gap:4px;justify-content:flex-end;border-top:1px solid var(--border);margin-top:12px;padding-top:8px">'+
+        '<button class="iconbtn" onclick="printVisit(\''+v.id+'\')" title="Print" aria-label="Print">🖨</button>'+
+        '<button class="iconbtn" onclick="editVisit(\''+v.id+'\')" title="Edit" aria-label="Edit">✏️</button>'+
+        '<button class="iconbtn" onclick="delVisit(\''+v.id+'\')" title="Delete" aria-label="Delete">🗑</button></div></div>';
+      }).join("")+'</div>')+
+  '<p class="disclaimer">Support material only — check symptoms and treatment decisions with a qualified clinician.</p>';
+}
+function visitForm(v){
+  v=v||{};
+  const ch=v.chapter?bySlug(v.chapter):null;
+  const sug=ch?scriptsOf(ch):[];
+  return '<div class="mh"><h3>Doctor visit prep sheet</h3><button class="x" onclick="closeModal()" aria-label="Close">✕</button></div>'+
+  '<p style="margin:0 0 12px;font-size:13px;color:var(--muted)">Write it down now so you don\u2019t have to remember it in the room.</p>'+
+  '<div class="formrow"><div class="field"><label for="v-date">Appointment date</label><input type="date" id="v-date" value="'+esc(v.date||"")+'"></div>'+
+  '<div class="field"><label for="v-clin">Clinician</label><input type="text" id="v-clin" placeholder="Dr. \u2026" value="'+esc(v.clinician||"")+'"></div></div>'+
+  '<div class="field"><label for="v-ch">The symptom chapter I\u2019m using</label><select id="v-ch"><option value="">Choose the chapter that fits</option>'+SYMPTOMS.map(c=>'<option value="'+c.slug+'"'+(v.chapter===c.slug?" selected":"")+'>'+(c.number<=12?"Ch. "+c.number+" · ":"")+esc(c.title)+"</option>").join("")+'</select></div>'+
+  '<div class="field" style="background:var(--soft);border-radius:12px;padding:12px"><label>My top three symptoms</label>'+
+  [1,2,3].map(n=>'<input type="text" id="v-s'+n+'" style="margin-top:8px" placeholder="'+(n===1?"Most bothering me\u2026":"")+'" value="'+esc(v["s"+n]||"")+'">').join("")+'</div>'+
+  '<div class="field"><label for="v-time">The timing or pattern I noticed</label><textarea id="v-time" rows="2" placeholder="e.g. only in the week before my period; worse after poor sleep">'+esc(v.timing||"")+'</textarea></div>'+
+  '<div class="field"><label for="v-script">The exact script I want to use</label><textarea id="v-script" rows="2" placeholder="Write it word for word — you don\u2019t have to improvise.">'+esc(v.script||"")+'</textarea></div>'+
+  '<div id="v-sug">'+(sug.length?'<p style="font-size:11.5px;color:var(--muted);margin:8px 0 0">💬 From the \u201C'+esc(ch.title)+'\u201D chapter — tap to use:</p>'+sug.map(s=>'<button type="button" class="suggest" onclick="document.getElementById(\'v-script\').value=this.textContent">'+esc(s)+'</button>').join(""):"")+'</div>'+
+  '<div class="field"><label for="v-q">My 2–3 questions</label><textarea id="v-q" rows="2" placeholder="1. \u2026 2. \u2026 3. \u2026">'+esc(v.questions||"")+'</textarea></div>'+
+  '<div class="field"><label for="v-dec">Decisions, tests, or follow-up agreed</label><textarea id="v-dec" rows="2" placeholder="Fill in after the visit so your own records stay complete.">'+esc(v.decisions||"")+'</textarea></div>'+
+  '<div style="display:flex;justify-content:flex-end;gap:8px;margin-top:16px"><button class="btn ghost" onclick="closeModal()">Cancel</button><button class="btn" onclick="saveVisit()">'+(v.id?"Update sheet":"Save sheet")+'</button></div>';
+}
+function newVisit(){ editingVisit=null; openModal(visitForm(null)); bindChapterSuggest(); }
+function editVisit(id){ editingVisit=VISITS.find(v=>v.id===id); openModal(visitForm(editingVisit)); bindChapterSuggest(); }
+function bindChapterSuggest(){
+  const sel=$("#v-ch");
+  sel.onchange=()=>{ const ch=sel.value?bySlug(sel.value):null; const sug=ch?scriptsOf(ch):[];
+    $("#v-sug").innerHTML=sug.length?'<p style="font-size:11.5px;color:var(--muted);margin:8px 0 0">💬 From the \u201C'+esc(ch.title)+'\u201D chapter — tap to use:</p>'+sug.map(s=>'<button type="button" class="suggest" onclick="document.getElementById(\'v-script\').value=this.textContent">'+esc(s)+'</button>').join(""):""; };
+}
+function saveVisit(){
+  const v={id:editingVisit?editingVisit.id:uid(),date:$("#v-date").value,clinician:$("#v-clin").value.trim(),chapter:$("#v-ch").value,
+    s1:$("#v-s1").value.trim(),s2:$("#v-s2").value.trim(),s3:$("#v-s3").value.trim(),timing:$("#v-time").value.trim(),
+    script:$("#v-script").value.trim(),questions:$("#v-q").value.trim(),decisions:$("#v-dec").value.trim()};
+  if(editingVisit){ VISITS=VISITS.map(x=>x.id===v.id?v:x); } else { VISITS=[v].concat(VISITS); }
+  save(LS.visits,VISITS); closeModal(); go("doctor"); toast("Prep sheet saved");
+}
+function delVisit(id){ if(confirm("Delete this prep sheet? This can\u2019t be undone.")){ VISITS=VISITS.filter(v=>v.id!==id); save(LS.visits,VISITS); render(); } }
+function printVisit(id){
+  document.querySelectorAll(".visitcard").forEach(el=>el.classList.add("no-print"));
+  const el=document.querySelector('[data-vid="'+id+'"]');
+  if(el){ el.classList.remove("no-print"); }
+  window.print();
+  setTimeout(()=>document.querySelectorAll(".visitcard").forEach(el=>el.classList.remove("no-print")),400);
+}
+
+/* labs */
+const LABGROUPS=[
+  {group:"Thyroid",tests:["TSH","Free T4","TPO antibodies"]},
+  {group:"Blood & Iron",tests:["CBC","Ferritin and iron studies"]},
+  {group:"Nutrients",tests:["Vitamin B12 and folate","Vitamin D (25-OH)"]},
+  {group:"Metabolic",tests:["HbA1c or fasting glucose"]},
+  {group:"Hormones",tests:["FSH","Estradiol","Androgen testing (testosterone / DHEA-S)"]},
+  {group:"Other / Inflammatory",tests:["Pregnancy test","CRP / ESR / RF / anti-CCP / ANA"]}
+];
+function viewLabs(){
+  const all=LABS.slice().sort((a,b)=>(b.date||"").localeCompare(a.date||""));
+  const latest={}; all.forEach(l=>{ if(!latest[l.test]) latest[l.test]=l; });
+  const custom=new Set(Object.keys(latest).filter(t=>!LABGROUPS.some(g=>g.tests.includes(t))));
+  const row=t=>{
+    const cur=latest[t]; const hist=all.filter(l=>l.test===t&&l!==cur);
+    return '<div class="toolrow"><span class="tname">'+esc(t)+'</span>'+
+    '<span class="tval">'+(cur&&cur.result?esc(cur.result):"—")+'</span>'+
+    '<span class="tref">'+(cur&&cur.range?"ref: "+esc(cur.range):"no range set")+'</span>'+
+    '<span style="font-size:12px;color:var(--muted)">'+(cur&&cur.date?fmtP(new Date(cur.date)):"")+'</span>'+
+    '<button class="btn ghost small" onclick="logLab(\''+esc(t)+'\')">'+(cur&&cur.result?"New result":"Log result")+'</button>'+
+    (hist.length?'<div class="hist" style="flex-basis:100%"><b style="font-size:11px;text-transform:uppercase;letter-spacing:.05em">History</b>'+hist.map(h=>'<div class="hrow"><span style="width:46px">'+(h.date?fmtP(new Date(h.date)):"—")+'</span><b>'+esc(h.result||"—")+'</b><span style="flex:1">'+esc(h.note||"")+'</span><button class="iconbtn" style="padding:2px 6px" onclick="delLab(\''+h.id+'\')" aria-label="Delete">🗑</button></div>').join("")+'</div>':"")+
+    '</div>';
+  };
+  $("#view").innerHTML=
+  '<p class="kicker">Use clinician-selected tests only</p>'+
+  '<h1 class="h1">Lab results log</h1>'+
+  '<p class="sub">You do not need every test listed. Record only tests your clinician orders, and interpret each result with the laboratory range, your history, and your symptoms.</p>'+
+  '<div class="card pad" style="margin-top:16px;border-color:color-mix(in srgb,#3e8f8a 30%,transparent);background:color-mix(in srgb,#3e8f8a 6%,var(--card))">'+
+  '<p style="margin:0;font-size:13.5px">ℹ️ Ranges vary between labs — always copy the reference range printed on <i>your</i> report, and keep questions for your clinician. See Toolkit → Lab-Test Cheat Sheet.</p></div>'+
+  LABGROUPS.map(g=>'<section style="margin-top:22px"><h2 style="font-size:18px;margin:0 0 10px">🧪 '+esc(g.group)+'</h2>'+g.tests.map(row).join("")+'</section>').join("")+
+  (custom.size?'<section style="margin-top:22px"><h2 style="font-size:18px;margin:0 0 10px">Other tests you track</h2>'+Array.from(custom).map(row).join("")+'</section>':"")+
+  '<div class="card pad" style="margin-top:18px"><label style="font-weight:600;font-size:14px">Your clinician ordered something else?</label>'+
+  '<div style="display:flex;gap:8px;margin-top:8px"><input type="text" id="lab-custom" placeholder="e.g. Fasting insulin" style="flex:1;border:1px solid var(--border);background:var(--card);color:var(--fg);border-radius:11px;padding:10px 13px;font:inherit">'+
+  '<button class="btn ghost small" onclick="addCustomLab()">＋ Add test</button></div></div>'+
+  '<p class="disclaimer">Support material only — interpret results with your clinician.</p>';
+}
+function logLab(test){
+  openModal('<div class="mh"><h3>'+esc(test)+'</h3><button class="x" onclick="closeModal()" aria-label="Close">✕</button></div>'+
+  '<div class="formrow"><div class="field"><label>My result</label><input type="text" id="lb-r" placeholder="value"></div>'+
+  '<div class="field"><label>Reference range</label><input type="text" id="lb-g" placeholder="from your report"></div></div>'+
+  '<div class="formrow"><div class="field"><label>Date</label><input type="date" id="lb-d" value="'+todayISO()+'"></div>'+
+  '<div class="field"><label>Flag / note</label><input type="text" id="lb-n" placeholder="e.g. recheck in 3 months"></div></div>'+
+  '<div style="display:flex;justify-content:flex-end;gap:8px;margin-top:16px"><button class="btn ghost" onclick="closeModal()">Cancel</button><button class="btn" onclick="saveLab(\''+esc(test)+'\')">Save this result</button></div>');
+}
+function saveLab(test){
+  LABS.push({id:uid(),test,result:$("#lb-r").value.trim(),range:$("#lb-g").value.trim(),date:$("#lb-d").value,note:$("#lb-n").value.trim()});
+  save(LS.labs,LABS); closeModal(); go("labs"); toast("Result logged — "+test);
+}
+function delLab(id){ LABS=LABS.filter(l=>l.id!==id); save(LS.labs,LABS); render(); }
+function addCustomLab(){ const t=$("#lab-custom").value.trim(); if(!t)return; LABS.push({id:uid(),test:t,result:"",range:"",date:todayISO(),note:""}); save(LS.labs,LABS); render(); toast(t+" added"); }
+
+/* toolkit */
+function viewToolkit(){
+  const items=APPENDIX.concat(STACKING?[STACKING]:[]);
+  $("#view").innerHTML=
+  '<p class="kicker">The reference shelf</p>'+
+  '<h1 class="h1">Toolkit</h1>'+
+  '<p class="sub">The book\u2019s appendices — lab tests decoded, supplement interactions, label reading, sources, and the exact words to use when a doctor dismisses you.</p>'+
+  '<div class="grid2" style="margin-top:16px">'+items.map(c=>
+    '<button class="chcard" onclick="openAppendix(\''+c.slug+'\')"><span class="bar" style="--c1:'+chColor(c.slug)+'"></span>'+
+    '<span class="chhead"><span class="ico" style="--c1:'+chColor(c.slug)+'">'+chIcon(c.slug)+'</span></span>'+
+    '<h2>'+esc(c.title)+'</h2><p class="tg">'+esc(c.tagline)+'</p></button>').join("")+'</div>'+
+  '<div class="card pad" style="margin-top:20px;border-color:color-mix(in srgb,#4d8f7a 30%,transparent);background:color-mix(in srgb,#4d8f7a 6%,var(--card))">'+
+  '<h2 style="margin:0 0 4px;font-size:18px">🧩 Stacking protocols safely</h2>'+
+  '<p style="margin:0;font-size:14px;color:var(--muted)">Managing three symptoms at once? The book\u2019s rule: change one thing at a time, keep the shared foundation (sleep rhythm, blood sugar, steady meals), and read every Safety Gate before stacking anything.</p></div>';
+}
+function openAppendix(slug){
+  const c=bySlug(slug);
+  openModal('<div class="mh"><h3 style="padding-right:28px">'+esc(c.title)+'</h3><button class="x" onclick="closeModal()" aria-label="Close">✕</button></div>'+
+  '<p style="margin:0 0 6px;font-size:13px;color:var(--muted)">'+esc(c.tagline)+'</p>'+
+  c.sections.map((s,i)=>(s.title&&s.title!==c.title?'<h4 class="bh" style="margin-top:18px">'+esc(s.title)+'</h4>':"")+'<div'+(s.anchor?' id="a-'+esc(s.anchor)+'"':"")+'>'+renderBlocks(s.blocks,"app:"+slug+":"+i)+'</div>').join("")+
+  '<p class="disclaimer" style="margin-top:16px">Support material only — check supplements, interactions and treatment decisions with a qualified clinician or pharmacist.</p>');
+}
+
+/* chapter detail */
+function viewChapter(slug){
+  const c=bySlug(slug); if(!c){ go("chapters"); return; }
+  const col=chColor(slug);
+  const hero=(()=>{ for(const s of c.sections){ for(const b of s.blocks){ if(b.type==="image") return b.src; } } return null; })();
+  const safety=c.sections.find(s=>s.kind==="safety");
+  const others=c.sections.filter(s=>s.kind!=="safety"&&s.kind!=="general");
+  const overview=c.sections.filter(s=>s.kind==="general");
+
+  let safetyHTML="";
+  if(safety){
+    const anyWarn=safety.blocks.some((b,i)=>b.type==="checklist"&&b.items.some((_,j)=>CHECKS["ch:"+slug+":safety:"+i+":"+j]));
+    safetyHTML='<section class="sec safety" id="safety">'+
+    '<div class="sech"><h2>⚠ Safety Gate — read this first</h2></div>'+
+    (anyWarn?'<div class="alertx"><b>Stop — get medical help first</b><p>You checked a warning sign. Do not try this chapter\u2019s protocol. Contact your clinician or local emergency services as described in the book.</p></div>':"")+
+    renderBlocks(safety.blocks,"ch:"+slug+":safety")+'</section>';
+  }
+
+  let sectionsHTML=others.map((s,i)=>{
+    const sid = s.anchor ? 'a-'+s.anchor : 'sec-'+i;
+    if(s.kind==="science"){
+      return '<details class="sci" id="'+sid+'"><summary>The science<span class="hint">Optional — open when you\u2019re curious. Explained simply.</span></summary>'+
+      renderBlocks(s.blocks,"ch:"+slug+":"+s.kind)+'</details>';
+    }
+    let scriptsHTML="";
+    if(s.kind==="doctor"){
+      const sc=scriptsOf(c);
+      if(sc.length) scriptsHTML='<p style="font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:4px 0 2px">Tap to copy a script</p>'+
+        sc.map(x=>'<button type="button" class="copybtn" onclick="copyText(this.dataset.s)" data-s="'+esc(x)+'">'+esc(x)+' <span style="font-style:normal">📋</span></button>').join("");
+    }
+    return '<section class="sec" id="'+sid+'"><div class="sech"><h2>'+(SECLABEL[s.kind]||esc(s.title))+'</h2>'+
+      (SECCHIP[s.kind]?'<span class="tag">'+SECCHIP[s.kind]+'</span>':"")+'</div>'+
+      (s.kind==="doctor"?scriptsHTML:"")+renderBlocks(s.blocks,"ch:"+slug+":"+s.kind)+'</section>';
+  }).join("");
+
+  $("#view").innerHTML=
+  '<button class="dback no-print" onclick="go(\'chapters\')">← All chapters</button>'+
+  '<div class="hero"><div class="hg" style="--c1:'+col+'"></div>'+
+  '<div class="ht"><span class="ico" style="--c1:'+col+'">'+chIcon(slug)+'</span>'+
+  '<div><span class="tag" style="background:'+col+'22;color:'+col+'">'+(c.number<=12?"Chapter "+c.number:c.number===13?"Special Chapter":"Guide")+'</span>'+
+  '<h1>'+esc(c.title)+'</h1><p class="tg">'+esc(c.tagline)+'</p></div></div>'+
+  (hero?'<img src="'+esc(hero)+'" alt="'+esc(c.title)+' illustration">':"")+'</div>'+
+  '<nav class="chipnav no-print"><a href="#safety" class="red">⚠ Safety Gate first</a>'+others.map((s,i)=>'<a href="#'+(s.anchor?"a-"+s.anchor:"sec-"+i)+'">'+(SECLABEL[s.kind]||esc(s.title))+'</a>').join("")+'</nav>'+
+  safetyHTML+
+  overview.map((s,i)=>renderBlocks(s.blocks,"ch:"+slug+":gen"+i)).join("")+
+  sectionsHTML+
+  '<p class="disclaimer">Support-book reminder: this chapter offers general education and practical support, not personal medical advice. Check symptoms, tests, medicines, supplements and treatment choices with a qualified clinician; seek urgent care when the Safety Gate applies.</p>';
+}
+
+/* ---------- modal ---------- */
+function openModal(inner){
+  let ov=document.getElementById("ovl");
+  if(!ov){ ov=document.createElement("div"); ov.id="ovl"; ov.className="overlay"; document.body.appendChild(ov);
+    ov.addEventListener("click",e=>{ if(e.target===ov) closeModal(); }); }
+  ov.innerHTML='<div class="modal" role="dialog" aria-modal="true">'+inner+'</div>';
+  document.body.style.overflow="hidden";
+}
+function closeModal(){ const ov=document.getElementById("ovl"); if(ov)ov.remove(); document.body.style.overflow=""; }
+document.addEventListener("keydown",e=>{ if(e.key==="Escape"){ closeModal(); $("#lightbox").classList.remove("open"); } });
+
+/* ---------- theme ---------- */
+function toggleTheme(){
+  const cur=document.documentElement.getAttribute("data-theme")==="dark"?"light":"dark";
+  document.documentElement.setAttribute("data-theme",cur);
+  save(LS.theme,cur);
+}
+(function(){ const t=load(LS.theme,null); if(t)document.documentElement.setAttribute("data-theme",t); })();
+
+/* ---------- router ---------- */
+const TABS=[["today","Today","📆"],["chapters","Chapters","📖"],["tracker","Tracker","🗓"],["doctor","Doctor","🩺"],["labs","Labs","🧪"],["toolkit","Toolkit","🧰"]];
+function go(route){ if(location.hash==="#/"+route){ render(); } else { location.hash="#/"+route; } }
+function render(){
+  const h=(location.hash||"#/today").replace(/^#\//,"").split("?")[0];
+  const parts=h.split("/");
+  const active=parts[0]||"today";
+  const navHTML=TABS.map(([id,label,ic])=>'<button class="navbtn'+(id===active||(active==="chapter"&&id==="chapters")?" on":"")+'" onclick="go(\''+id+'\')" aria-current="'+(id===active?"page":"false")+'"><span aria-hidden="true">'+ic+'</span>'+label+'</button>').join("");
+  $("#sidenav").innerHTML=navHTML;
+  $("#bottomnav").innerHTML=navHTML;
+  if(parts[0]==="chapter"&&parts[1]){ viewChapter(parts[1]); }
+  else if(parts[0]==="chapters"){ viewChapters(); }
+  else if(parts[0]==="tracker"){ viewTracker(); }
+  else if(parts[0]==="doctor"){ viewDoctor(); }
+  else if(parts[0]==="labs"){ viewLabs(); }
+  else if(parts[0]==="toolkit"){ viewToolkit(); }
+  else { viewToday(); }
+  window.scrollTo(0,0);
+}
+window.addEventListener("hashchange",render);
+
+/* checklist toggles (event delegation) */
+document.addEventListener("click",e=>{
+  const el=e.target.closest("[data-check]"); if(!el)return;
+  const key=el.getAttribute("data-check");
+  if(CHECKS[key]) delete CHECKS[key]; else CHECKS[key]=true;
+  save(LS.checks,CHECKS);
+  el.classList.toggle("on",!!CHECKS[key]);
+  // if inside a safety gate, re-render chapter to show/hide the stop alert
+  if(key.startsWith("ch:")&&key.includes(":safety:")) render();
+});
+
+/* in-content book links: '@anchor' scrolls, 'slug' opens that chapter */
+document.addEventListener("click",e=>{
+  const el=e.target.closest("[data-nav]"); if(!el)return;
+  e.preventDefault();
+  const t=el.getAttribute("data-nav")||"";
+  if(t.startsWith("@")){
+    const dest=document.getElementById("a-"+t.slice(1));
+    if(dest){
+      const det = dest.tagName==="DETAILS" ? dest : dest.closest("details");
+      const go2=()=>{ dest.scrollIntoView({behavior:"smooth",block:"start"}); dest.classList.add("nav-flash"); setTimeout(()=>dest.classList.remove("nav-flash"),1800); };
+      if(det && !det.open){ det.open=true; setTimeout(go2,300); } else go2();
+    }
+  } else {
+    if(document.getElementById("ovl")) closeModal();
+    go("chapter/"+t);
+  }
+});
+render();
+</script>
+</body>
+</html>
